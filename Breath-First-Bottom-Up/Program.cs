@@ -15,11 +15,11 @@ namespace Breath_First_Bottom_Up
         private static int intToChar = 48;
         private static char illegalChar = '0';
 
-        private static Dictionary<char, List<string>> getFileContent(string name)
+        private static List<KeyValuePair<char, string>> getFileContent(string name)
         {
             var csvReader = new StreamReader(name);
             int index = 0; //the first line is for description ,not real data, skip it
-            var content = new Dictionary<char, List<string>>();
+            var content = new List<KeyValuePair<char, string>>();
             while (!csvReader.EndOfStream)
             {
                 var line = csvReader.ReadLine();
@@ -30,41 +30,34 @@ namespace Breath_First_Bottom_Up
                     continue;
                 }
 
+                if (line == null)
+                {
+                    break;
+                }
+
                 var values = line.Split(',');
                 if (values[0] != "" && values[0] != " ")
                 {
-                    var List = new List<string>();
-                    for (int i = 1; i <= csvMax; ++i)
-                    {
-                        if (values[i] != "" && values[i] != " ")
-                        {
-                            List.Add(values[i]);
-                        }
-                    }
-                    content[values[0][0]] = List;
+                    content.Add(new KeyValuePair<char, string>(values[0][0], values[1]));
                 }
             }
 
             return content;
         }
 
-
         static char canBePlacedByNonTerminal(string StackString)
         {
-            foreach (var VARIABLE in content)
+            for (int i = 0; i < content.Count; ++i)
             {
-                foreach (var subVariable in VARIABLE.Value)
+                if (content[i].Value == StackString)
                 {
-                    if (subVariable == StackString)
-                    {
-                        return VARIABLE.Key;
-                    }
+                    return content[i].Key;
                 }
             }
             return illegalChar;
         }
 
-        private static Dictionary<char, List<string>> content;
+        private static List<KeyValuePair<char, string>> content;
 
         private static HashSet<char> nonTerminalHashset = new HashSet<char>()
         {
@@ -102,7 +95,7 @@ namespace Breath_First_Bottom_Up
         static void Main(string[] args)
         {
             content = getFileContent("rules.csv");
-            if (content.ContainsKey(StartSymbol) == false)
+            if (content.Count == 0)
             {
                 return;
             }
