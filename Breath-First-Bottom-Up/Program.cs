@@ -178,13 +178,19 @@ namespace Breath_First_Bottom_Up
         static void replace(int index)
         {
             Stack<char> currentStack = currentPredictionStack[index];
-            char ret = canBePlacedByNonTerminal(currentStack.StackString());
-            if (ret != illegalChar)
+            Stack<char> tempStack = new Stack<char>(currentStack.Reverse());
+            string content = "";
+            while (tempStack.Count > 0)
             {
-                Stack<char> newBranck = new Stack<char>();
-                newBranck.Push(ret);
-                currentPredictionStack[index] = newBranck;  //replace the old stack
-                replace(index);
+                content = tempStack.Pop() + content;
+                char ret = canBePlacedByNonTerminal(content);
+                if (ret != illegalChar)
+                {
+                    Stack<char> newBranck = new Stack<char>(tempStack.Reverse());
+                    newBranck.Push(ret);
+                    currentPredictionStack[index] = newBranck; //replace the old stack
+                    replace(index);
+                }
             }
         }
 

@@ -1,5 +1,5 @@
 input your input string:
-aaaab
+aaaaabb
 after add-----
 a
 after replace -----
@@ -23,13 +23,35 @@ aaaa
 Sa
 aS
 after add-----
-aaaab
-Sab
+aaaaa
+Saa
+aSa
+aaS
+after replace -----
+aaaaa
+Saa
+aSa
+aaS
+after add-----
+aaaaab
+Saab
+aSab
+aaSb
+after replace -----
+aaaaab
+Saab
+aS
+aS
+after add-----
+aaaaabb
+Saabb
+aSb
 aSb
 after replace -----
-aaaab
+aaaaabb
+Saabb
 S
 S
 the satified index is -----
-index: 2
 index: 3
+index: 4
