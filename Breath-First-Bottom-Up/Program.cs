@@ -59,38 +59,9 @@ namespace Breath_First_Bottom_Up
 
         private static List<KeyValuePair<char, string>> content;
 
-        private static HashSet<char> nonTerminalHashset = new HashSet<char>()
-        {
-            'A',
-            'B',
-            'C',
-            'D',
-            'E',
-            'F',
-            'G',
-            'H',
-            'I',
-            'J',
-            'K',
-            'L',
-            'M',
-            'N',
-            'O',
-            'P',
-            'Q',
-            'R',
-            'S',
-            'T',
-            'U',
-            'V',
-            'W',
-            'X',
-            'Y',
-            'Z'
-        };
-
         private static Stack<char> restInputStack = new Stack<char>();
         private static List<Stack<char>> currentPredictionStack = new List<Stack<char>>();
+        private static List<string> currentPredictionStackCache = new List<string>();
 
         static void Main(string[] args)
         {
@@ -125,7 +96,7 @@ namespace Breath_First_Bottom_Up
             {
                 if (currentPredictionStack[i].Count == 1 && currentPredictionStack[i].Peek() == StartSymbol)
                 {
-                    Console.WriteLine("index: " + intToUnicodeCharShow(i));
+                    Console.WriteLine("index: " + intToUnicodeCharShowForAllInteger(i));
                 }
             }
 
@@ -134,9 +105,11 @@ namespace Breath_First_Bottom_Up
 
         static void predictionAndReplace(char nowChar)
         {
+            currentPredictionStackCache.Clear();
             for (int i = 0; i < currentPredictionStack.Count; i++)
             {
                 currentPredictionStack[i].Push(nowChar);
+                currentPredictionStackCache.Add(getReplaceRules(currentPredictionStack[i]));
             }
 
             Stack<char> initialStack = currentPredictionStack[0];
@@ -151,7 +124,10 @@ namespace Breath_First_Bottom_Up
                 {
                     Stack<char> newBranck = new Stack<char>(tempStack.Reverse());
                     newBranck.Push(ret);
-                    currentPredictionStack.Add(newBranck);
+                    if (false == currentPredictionStackCache.Contains(getReplaceRules(newBranck)))
+                    {
+                        currentPredictionStack.Add(newBranck);
+                    }
                 }
             }
 
@@ -161,16 +137,15 @@ namespace Breath_First_Bottom_Up
             {
                 for (int i = 1; i < currentPredictionStack.Count; i++)
                 {
-                    replace(i);
+                    replace(currentPredictionStack[i]);
                 }
             }
 
             showCurrent("after replace -----");
         }
 
-        static void replace(int index)
+        static void replace(Stack<char> currentStack)
         {
-            Stack<char> currentStack = currentPredictionStack[index];
             Stack<char> tempStack = new Stack<char>(currentStack.Reverse());
             string content = "";
             while (tempStack.Count > 0)
@@ -181,8 +156,12 @@ namespace Breath_First_Bottom_Up
                 {
                     Stack<char> newBranck = new Stack<char>(tempStack.Reverse());
                     newBranck.Push(ret);
-                    currentPredictionStack[index] = newBranck; //replace the old stack
-                    replace(index);
+                    if (currentPredictionStackCache.Contains(getReplaceRules(newBranck)) == false)
+                    {
+                        currentPredictionStack.Add(newBranck); //replace the old stack
+                        replace(newBranck);
+                        currentPredictionStackCache.Add(getReplaceRules(newBranck));
+                    }
                 }
             }
         }
@@ -224,6 +203,25 @@ namespace Breath_First_Bottom_Up
             else
             {
                 return Convert.ToChar(pop);
+            }
+        }
+
+        private static string intToUnicodeCharShowForAllInteger(int pop)
+        {
+            if (pop < 10 && pop > -1)//  0-9(int) change to 0-9(unicode)
+            {
+                return Convert.ToChar(pop + 1 + intToChar).ToString();
+            }
+            else
+            {
+                string ret = "";
+                while (pop > 9)
+                {
+                    ret = pop % 10 + ret;
+                    pop = pop / 10;
+                }
+                ret = pop + ret;
+                return ret;
             }
         }
     }
